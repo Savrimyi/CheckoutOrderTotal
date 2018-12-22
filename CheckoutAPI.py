@@ -8,23 +8,28 @@ valid_unit_types = ['each', 'per pound']
 class Item():
     def __init__(self, name, price_per_unit, unit_type):
         #Validate input before initializing
-        if not type(name) == str: raise(ValueError)
-        if not (type(price_per_unit) == int or type(price_per_unit) == float): raise(ValueError)
-        if not unit_type in valid_unit_types: raise(ValueError)
+        self.validate_parameters(name, price_per_unit, unit_type)
         self.name = name
         self.price_per_unit = price_per_unit
         self.unit_type = unit_type
 
-    def get_price():
-        return
+    def validate_parameters(self, name, price_per_unit, unit_type):
+        if not type(name) == str: raise(ValueError)
+        if not (type(price_per_unit) == int or type(price_per_unit) == float): raise(ValueError)
+        if not unit_type in valid_unit_types: raise(ValueError)
 
-    def update_price():
-        return
+    def get_price(self):
+        return self.price_per_unit
 
-    def markdown_price():
-        return
+    def update_price(self, new_price):
+        self.validate_parameters(self.name, new_price, self.unit_type)
+        self.price_per_unit = new_price
 
-    def set_special_price():
+    def markdown_price(self, markdown):
+        if markdown is None or markdown < 0: raise(ValueError)
+        self.update_price(self.price_per_unit - markdown)
+
+    def set_special_price(self):
         return
 
 
