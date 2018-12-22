@@ -36,11 +36,13 @@ class Item():
     def set_special_price(self, special):
 
         if special is None or \
-        re.search(r'buy \d+ items, get \d+ at %\d+ off', special.lower()) or \
-        re.search(r'buy \d+ items, get \d+ (free|half off)', special.lower()) or \
-        re.search(r'\d+ for \$\d+', special.lower()) or \
-        re.search(r'buy \d+ items, get \d+ of equal or lesser value for %\d+ off', special.lower()):
+        re.search(r'^buy \d+ items, get \d+ at %\d+ off', special.lower()) or \
+        re.search(r'^buy \d+ items, get \d+ (free|half off)', special.lower()) or \
+        re.search(r'^\d+ for \$\d+', special.lower()) or \
+        re.search(r'^buy \d+ items, get \d+ of equal or lesser value for %\d+ off', special.lower()):
             self.special_price = special
+        else:
+            raise(ValueError)
 
 class Checkout():
     def __init__():

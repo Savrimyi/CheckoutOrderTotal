@@ -79,3 +79,25 @@ class CheckoutAPIItemTestCase(unittest.TestCase):
         #Buy N, get M of equal or lesser value for %X off
         self.test_item.set_special_price("buy 4 items, get 5 of equal or lesser value for %10 off")
         self.assertEquals("buy 4 items, get 5 of equal or lesser value for %10 off", self.test_item.get_special_price())
+
+    def test_set_special_price_invalid_input(self):
+        with self.assertRaises(Exception):
+            self.test_item.set_special_price("this probably wont match any regex")
+
+    def test_set_special_price_invalid_number_of_items(self):
+        with self.assertRaises(Exception):
+            self.test_item.set_special_price("buy -4 items, get 5 of equal or lesser value for %10 off")
+        with self.assertRaises(Exception):
+            self.test_item.set_special_price("buy 4 items, get -5 of equal or lesser value for %10 off")
+        with self.assertRaises(Exception):
+            self.test_item.set_special_price("-5 for $10")
+        with self.assertRaises(Exception):
+            self.test_item.set_special_price("buy 4 items, get -5 free")
+        with self.assertRaises(Exception):
+            self.test_item.set_special_price("buy -4 items, get 5 free")
+
+    def test_set_special_price_invalid__percentage_off(self):
+        with self.assertRaises(Exception):
+            self.test_item.set_special_price("buy 4 items, get 5 of equal or lesser value for %-10 off")
+        with self.assertRaises(Exception):
+            self.test_item.set_special_price("buy 4 items, get 5 of equal or lesser value for %300 off")
