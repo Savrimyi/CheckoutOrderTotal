@@ -2,19 +2,19 @@ import unittest
 from CheckoutAPI import Checkout
 
 
-def CheckoutAPICheckoutTestCase(unittest.TestCase):
+class CheckoutAPICheckoutTestCase(unittest.TestCase):
 
     def test_init_checkout(self):
-        return
+        self.fail("Test not implemented")
 
     def test_add_item_to_store(self):
-        return
+        self.fail("Test not implemented")
 
     def test_get_items_in_cart(self):
-        return
+        self.fail("Test not implemented")
 
     def test_add_item_to_cart(self):
-        return
+        self.fail("Test not implemented")
 
     def test_remove_item_from_cart(self):
-        return
+        self.fail("Test not implemented")

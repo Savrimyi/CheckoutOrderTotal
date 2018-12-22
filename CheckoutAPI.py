@@ -5,8 +5,10 @@ import json
 
 
 class Item():
-    def __init__():
-        return
+    def __init__(self, name, price_per_unit, unit_type):
+        self.name = name
+        self.price_per_unit = price_per_unit
+        self.unit_type = unit_type
 
     def get_price():
         return
