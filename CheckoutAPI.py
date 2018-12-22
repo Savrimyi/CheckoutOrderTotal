@@ -1,4 +1,7 @@
-
+import socketserver
+import http.server
+import re
+import json
 
 
 class Item():
@@ -11,21 +14,18 @@ class Item():
     def update_price():
         return
 
+    def markdown_price():
+        return
+
+    def set_special_price():
+        return
+
 
 class Checkout():
     def __init__():
         return
 
-    def set_price():
-        return
-
-    def change_price():
-        return
-
-    def markdown_price():
-        return
-
-    def set_special_price():
+    def add_item_to_store():
         return
 
     def get_items_in_cart():
@@ -38,5 +38,16 @@ class Checkout():
         return
 
 
-class CheckoutAPI():
-    
+class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
+
+    def do_GET(self):
+        return
+
+    def do_POST(self):
+        return
+
+    def do_PUT(self):
+        return
+
+    def do_DELETE(self):
+        return
