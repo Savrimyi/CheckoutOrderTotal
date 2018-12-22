@@ -40,6 +40,10 @@ class Item():
         re.search(r'^buy \d+ items, get \d+ (free|half off)', special.lower()) or \
         re.search(r'^\d+ for \$\d+', special.lower()) or \
         re.search(r'^buy \d+ items, get \d+ of equal or lesser value for %\d+ off', special.lower()):
+            if re.search(r'%\d+ off', special.lower()):
+                percentage = re.search(r'%\d+ off', special.lower()).group().strip('%').strip(' off')
+                if int(percentage) > 100 or int(percentage) < 0:
+                    raise(ValueError)
             self.special_price = special
         else:
             raise(ValueError)
