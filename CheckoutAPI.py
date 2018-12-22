@@ -12,6 +12,7 @@ class Item():
         self.name = name
         self.price_per_unit = price_per_unit
         self.unit_type = unit_type
+        self.special_price = None
 
     def validate_parameters(self, name, price_per_unit, unit_type):
         if not type(name) == str: raise(ValueError)
@@ -29,9 +30,17 @@ class Item():
         if markdown is None or markdown < 0: raise(ValueError)
         self.update_price(self.price_per_unit - markdown)
 
-    def set_special_price(self):
-        return
+    def get_special_price(self):
+        return self.special_price
 
+    def set_special_price(self, special):
+
+        if special is None:
+            self.special_price = None
+        elif re.search(r'buy \d+ items, get \d+ at %\d+ off', special.lower()):
+            self.special_price = special
+        elif re.search(r'\d+ for \$\d+', special.lower()):
+            self.special_price = special
 
 class Checkout():
     def __init__():

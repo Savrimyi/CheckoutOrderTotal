@@ -55,5 +55,17 @@ class CheckoutAPIItemTestCase(unittest.TestCase):
         with self.assertRaises(Exception):
             self.test_item.markdown_price(-234)
 
-    def test_set_special_price(self):
-        self.fail("Test not implemented")
+    def test_set_and_get_special_price_percent_off(self):
+        self.test_item.set_special_price("buy 10 items, get 3 at %56 off")
+        self.assertEquals("buy 10 items, get 3 at %56 off", self.test_item.get_special_price())
+
+    def test_set_special_price_N_for_N(self):
+        self.test_item.set_special_price("5 for $10")
+        self.assertEquals("5 for $10", self.test_item.get_special_price())
+
+    def test_set_special_price_with_limit(self):
+        self.test_item.set_special_price("5 for $10. limit 6.")
+        self.assertEquals("5 for $10. limit 6.", self.test_item.get_special_price())
+
+    def test_set_special_price_equal_or_lesser_value(self):
+        return
