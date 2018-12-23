@@ -68,12 +68,12 @@ class CheckoutAPIItemTestCase(unittest.TestCase):
         self.assertEquals("5 for $10. limit 6.", self.test_item.get_special_price())
 
     def test_set_special_price_free_item(self):
-        self.test_item.set_special_price("buy 4 items, get 5 free")
-        self.assertEquals("buy 4 items, get 5 free", self.test_item.get_special_price())
+        self.test_item.set_special_price("buy 4 get 5 free")
+        self.assertEquals("buy 4 get 5 free", self.test_item.get_special_price())
 
     def test_set_special_price_half_off_item(self):
-        self.test_item.set_special_price("buy 4 items, get 5 half off")
-        self.assertEquals("buy 4 items, get 5 half off", self.test_item.get_special_price())
+        self.test_item.set_special_price("buy 4 get 5 half off")
+        self.assertEquals("buy 4 get 5 half off", self.test_item.get_special_price())
 
     def test_set_special_price_equal_or_lesser_value(self):
         #Buy N, get M of equal or lesser value for %X off
@@ -92,9 +92,9 @@ class CheckoutAPIItemTestCase(unittest.TestCase):
         with self.assertRaises(Exception):
             self.test_item.set_special_price("-5 for $10")
         with self.assertRaises(Exception):
-            self.test_item.set_special_price("buy 4 items, get -5 free")
+            self.test_item.set_special_price("buy 4 get -5 free")
         with self.assertRaises(Exception):
-            self.test_item.set_special_price("buy -4 items, get 5 free")
+            self.test_item.set_special_price("buy -4 get 5 free")
 
     def test_set_special_price_invalid__percentage_off(self):
         with self.assertRaises(Exception):

@@ -77,19 +77,35 @@ class CheckoutAPICheckoutTestCase(unittest.TestCase):
         self.test_checkout.remove_item_from_cart("potatoes", 3)
         self.assertEquals(self.test_checkout.get_checkout_total(), 5)
 
+    def test_get_checkout_total_3_for_10_with_limit_6(self):
+        self.test_checkout.add_item_to_cart("potatoes", 10)
+        self.test_checkout.get_item_information("potatoes").set_special_price("3 for $10. limit 6")
+        self.assertEquals(self.test_checkout.get_checkout_total(), 40)
+
     def test_get_checkout_total_with_percent_off_special(self):
         self.test_checkout.add_item_to_cart("potatoes", 40)
-        self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 items, get 3 at %56 off")
+        self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 items, get 3 at %44 off")
         self.assertEquals(self.test_checkout.get_checkout_total(), 180.2)
+
+
+    def test_get_checkout_total_with_half_off_special(self):
+        self.test_checkout.add_item_to_cart("potatoes", 40)
+        self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 get 3 half off")
+        self.assertEquals(self.test_checkout.get_checkout_total(), 31*5 + 9*2.5)
+
+    def test_get_checkout_total_with_free_item_special(self):
+        self.test_checkout.add_item_to_cart("potatoes", 40)
+        self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 get 3 free")
+        self.assertEquals(self.test_checkout.get_checkout_total(), 31*5)
 
     def test_get_checkout_total_with_special_and_limit(self):
         self.test_checkout.add_item_to_cart("potatoes", 40)
-        self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 items, get 3 at %56 off. limit 26.")
+        self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 items, get 3 at %44 off. limit 26.")
         self.assertEquals(self.test_checkout.get_checkout_total(), 100+16.8+70)
 
     def test_get_checkout_total_invalidated_special_and_limit(self):
         self.test_checkout.add_item_to_cart("potatoes", 40)
-        self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 items, get 3 at %56 off. limit 26.")
+        self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 items, get 3 at %44 off. limit 26.")
         self.assertEquals(self.test_checkout.get_checkout_total(), 100+16.8+70)
         self.test_checkout.remove_item_from_cart("potatoes", 37)
         self.assertEquals(self.test_checkout.get_checkout_total(), 15)

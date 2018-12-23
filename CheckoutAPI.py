@@ -37,7 +37,7 @@ class Item():
 
         if special is None or \
         re.search(r'^buy \d+ items, get \d+ at %\d+ off', special.lower()) or \
-        re.search(r'^buy \d+ items, get \d+ (free|half off)', special.lower()) or \
+        re.search(r'^buy \d+ get \d+ (free|half off)', special.lower()) or \
         re.search(r'^\d+ for \$\d+', special.lower()) or \
         re.search(r'^buy \d+ items, get \d+ of equal or lesser value for %\d+ off', special.lower()):
             if re.search(r'%\d+ off', special.lower()):
@@ -114,34 +114,53 @@ class Checkout():
             special = item['item'].get_special_price()
             if special is not None:
                 #do special stuff
-                if re.search(r'^buy \d+ items, get \d+ at %\d+ off', special.lower()):
+                special = special.lower()
+                if "free" in special or "half off" in special:
+                    special = special.replace("free","at %100 off").replace("half off","at %50 off").replace("get", "items, get")
+
+                if re.search(r'^buy \d+ items, get \d+ at %\d+ off', special):
                     pattern = re.compile(r'^buy (?P<purchase_requirement>\d+) items, get (?P<discounted_quantity>\d+) at %(?P<percentage_discount>\d+) off')
-                    match = pattern.match(special.lower()).groupdict()
+                    match = pattern.match(special).groupdict()
                     minimum_items = int(match['purchase_requirement']) + int(match['discounted_quantity'])
                     percentage_discount = int(match['percentage_discount']) / 100.0
-                    discounted_items = int(int(item['quantity']) / minimum_items) * int(match['discounted_quantity'])
-                    full_price_items = int((int(item['quantity']) / minimum_items) * int(match['purchase_requirement'])) \
-                        + (int(item['quantity']) % minimum_items)
-                    total += (item['item'].get_price() * full_price_items) + (item['item'].get_price() * percentage_discount * discounted_items)
+                    if re.search(r'^buy \d+ items, get \d+ at %\d+ off. limit (\d+)', special):
+                        pattern_with_limit = re.compile(r'^buy \d+ items, get \d+ at %\d+ off. limit (?P<limit>\d+)')
+                        match_with_limit = pattern_with_limit.match(special).groupdict()
+                        max_discount_sets = int(match_with_limit['limit']) / minimum_items
+                        max_discounted_items = max_discount_sets * int(match['discounted_quantity'])
+                        discounted_items = int(int(item['quantity']) / minimum_items) * int(match['discounted_quantity'])
+                        if discounted_items > max_discounted_items:
+                            discounted_items = max_discounted_items
+                    else:
+                        discounted_items = int(int(item['quantity']) / minimum_items) * int(match['discounted_quantity'])
+                    full_price_items = int(item['quantity']) - discounted_items#int((int(item['quantity']) / minimum_items) * int(match['purchase_requirement'])) \
+                        #+ (int(item['quantity']) % minimum_items)
+                    total += (item['item'].get_price() * full_price_items) + (item['item'].get_price() * (1 - percentage_discount) * discounted_items)
 
-                elif re.search(r'^buy \d+ items, get \d+ (free|half off)', special.lower()):
+                elif re.search(r'^buy \d+ items, get \d+ (free|half off)', special):
                     pattern = re.compile(r'^buy (?P<purchase_requirement>\d+) items, get (?P<discounted_quantity>\d+) (?P<half_or_free>free|half off)')
-                    match = pattern.match(special.lower()).groupdict()
+                    match = pattern.match(special).groupdict()
                     print("Special: ", match)
 
-                elif re.search(r'^\d+ for \$\d+', special.lower()):
+                elif re.search(r'^\d+ for \$\d+', special):
                     pattern = re.compile(r'^(?P<quantity>\d+) for \$(?P<price>\d+)')
-                    match = pattern.match(special.lower()).groupdict()
+                    match = pattern.match(special).groupdict()
                     if item['quantity'] > int(match['quantity']):
                         discount_count = int(item['quantity'] / int(match['quantity']))
-                        remainder = item['quantity'] % int(match['quantity'])
+                        if re.search(r'^^\d+ for \$\d+. limit (\d+)', special):
+                            pattern_with_limit = re.compile(r'^\d+ for \$\d+. limit (?P<limit>\d+)')
+                            match_with_limit = pattern_with_limit.match(special).groupdict()
+                            max_discount_sets = int(match_with_limit['limit']) / int(match['quantity'])
+                            if max_discount_sets < discount_count:
+                                discount_count = max_discount_sets
+                        remainder = item['quantity'] - (discount_count * int(match['quantity']))
                         total += discount_count * float(match['price']) + item['item'].get_price() * remainder
                     else:
                         total += item['item'].get_price() * item['quantity']
 
-                elif re.search(r'^buy \d+ items, get \d+ of equal or lesser value for %\d+ off', special.lower()):
+                elif re.search(r'^buy \d+ items, get \d+ of equal or lesser value for %\d+ off', special):
                     pattern = re.compile(r'^buy (?P<purchase_requirement>\d+) items, get (?P<discounted_quantity>\d+) of equal or lesser value for %(?P<percentage_discount>\d+) off')
-                    match = pattern.match(special.lower()).groupdict()
+                    match = pattern.match(special).groupdict()
                     print("Special: ", match)
             else:
                 total += item['item'].get_price() * item['quantity']
