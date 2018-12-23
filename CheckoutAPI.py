@@ -109,6 +109,23 @@ class Checkout():
         else:
             raise(ValueError)
 
+    def get_checkout_total(self):
+        total = 0.0
+        for item in self.cart:
+            special = item['item'].get_special_price()
+            if special is not None:
+                #do special stuff
+                if re.search(r'^buy \d+ items, get \d+ at %\d+ off', special.lower()):
+                    return
+                elif re.search(r'^buy \d+ items, get \d+ (free|half off)', special.lower()):
+                    return
+                elif re.search(r'^\d+ for \$\d+', special.lower()):
+                    return
+                elif re.search(r'^buy \d+ items, get \d+ of equal or lesser value for %\d+ off', special.lower()):
+                    return
+            else:
+                total += item['item'].get_price() * item['quantity']
+        return total
 
 class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
 

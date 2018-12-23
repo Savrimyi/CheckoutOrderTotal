@@ -60,3 +60,19 @@ class CheckoutAPICheckoutTestCase(unittest.TestCase):
         self.test_checkout.add_item_to_cart("potatoes", 4)
         with self.assertRaises(Exception):
             self.test_checkout.remove_item_from_cart("potatoes", -3)
+
+    def test_get_checkout_total(self):
+        self.test_checkout.add_item_to_cart("potatoes", 4)
+        self.assertEquals(self.test_checkout.get_checkout_total(), 20)
+
+    def test_get_checkout_total_with_special(self):
+        self.test_checkout.add_item_to_cart("potatoes", 4)
+        self.test_checkout.get_item_information("potatoes").set_special_price("3 for $5")
+        self.assertEquals(self.test_checkout.get_checkout_total(), 9)
+
+    def test_get_checkout_total_invalidated_special(self):
+        self.test_checkout.add_item_to_cart("potatoes", 4)
+        self.test_checkout.get_item_information("potatoes").set_special_price("3 for $5")
+        self.assertEquals(self.test_checkout.get_checkout_total(), 10)
+        self.test_checkout.remove_item_from_cart("potatoes", 3)
+        self.assertEquals(self.test_checkout.get_checkout_total(), 5)
