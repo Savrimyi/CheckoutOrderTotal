@@ -48,21 +48,61 @@ class Item():
         else:
             raise(ValueError)
 
+    def __eq__(self, other):
+        if type(other) != type(self):
+            return False
+        return self.name == other.name and \
+                self.price_per_unit == other.price_per_unit and \
+                self.unit_type == other.unit_type and \
+                self.special_price == other.special_price
+
 class Checkout():
-    def __init__():
-        return
+    def __init__(self):
+        self.store = []
+        self.cart = []
 
-    def add_item_to_store():
-        return
+    def add_item_to_store(self, name, price_per_unit, unit_type):
+        for item in self.store:
+            if item.name == name:
+                #Item is already in store
+                raise(ValueError)
+        self.store.append(Item(name, price_per_unit, unit_type))
 
-    def get_items_in_cart():
-        return
+    def get_item_information(self, name):
+        matches = list(filter(lambda x: x.name == name, self.store))
+        print("matches: ", matches)
+        if matches == []:
+            return None
+        else:
+            return matches[0]
 
-    def add_item_to_cart():
-        return
+    def get_items_in_store(self):
+        return self.store
 
-    def remove_item_from_cart():
-        return
+    def get_items_in_cart(self):
+        return self.cart
+
+    def add_item_to_cart(self, name, quantity):
+        item = self.get_item_information(name)
+        self.cart.append({"item": item, "quantity": quantity})
+
+    def get_item_information_from_cart(self, name):
+        matches = list(filter(lambda x: x['item'].name == name, self.cart))
+        if matches == []:
+            return None
+        else:
+            return matches[0]
+
+    def remove_item_from_cart(self, name, quantity):
+        item_in_cart = self.get_item_information_from_cart(name)
+        if item_in_cart is None:
+            raise("This item is not in your cart.")
+        elif item_in_cart['quantity'] > quantity:
+            item_in_cart['quantity'] -= quantity
+        elif item_in_cart['quantity'] == quantity:
+            self.cart.remove(item_in_cart)
+        else:
+            raise(ValueError)
 
 
 class CheckoutAPI(http.server.SimpleHTTPRequestHandler):

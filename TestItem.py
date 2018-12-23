@@ -101,3 +101,14 @@ class CheckoutAPIItemTestCase(unittest.TestCase):
             self.test_item.set_special_price("buy 4 items, get 5 of equal or lesser value for %-10 off")
         with self.assertRaises(Exception):
             self.test_item.set_special_price("buy 4 items, get 5 of equal or lesser value for %300 off")
+
+    def test_equals(self):
+        test_item_1 = Item("potatoes", 5, "each")
+        test_item_2 = Item("potatoes", 5, "each")
+        self.assertEquals(test_item_1, test_item_2)
+
+    def test_not_equals(self):
+        test_item_1 = Item("potatoes", 5, "each")
+        self.assertNotEquals(test_item_1, "string")
+        self.assertNotEquals(test_item_1, 1234)
+        self.assertNotEquals(test_item_1, None)
