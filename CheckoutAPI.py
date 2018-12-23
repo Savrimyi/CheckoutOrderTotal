@@ -70,7 +70,6 @@ class Checkout():
 
     def get_item_information(self, name):
         matches = list(filter(lambda x: x.name == name, self.store))
-        print("matches: ", matches)
         if matches == []:
             return None
         else:
@@ -116,13 +115,27 @@ class Checkout():
             if special is not None:
                 #do special stuff
                 if re.search(r'^buy \d+ items, get \d+ at %\d+ off', special.lower()):
-                    return
+                    pattern = re.compile(r'^buy (?P<purchase_requirement>\d+) items, get (?P<discounted_quantity>\d+) at %(?P<percentage_discount>\d+) off')
+                    match = pattern.match(special.lower()).groupdict()
+                    print("Special: ", match)
+
                 elif re.search(r'^buy \d+ items, get \d+ (free|half off)', special.lower()):
-                    return
+                    pattern = re.compile(r'^buy (?P<purchase_requirement>\d+) items, get (?P<discounted_quantity>\d+) (?P<half_or_free>free|half off)')
+                    match = pattern.match(special.lower()).groupdict()
+                    print("Special: ", match)
                 elif re.search(r'^\d+ for \$\d+', special.lower()):
-                    return
+                    pattern = re.compile(r'^(?P<quantity>\d+) for \$(?P<price>\d+)')
+                    match = pattern.match(special.lower()).groupdict()
+                    if item['quantity'] > int(match['quantity']):
+                        discount_count = int(item['quantity'] / int(match['quantity']))
+                        remainder = item['quantity'] % int(match['quantity'])
+                        total += discount_count * float(match['price']) + item['item'].get_price() * remainder
+                    else:
+                        total += item['item'].get_price() * item['quantity']
                 elif re.search(r'^buy \d+ items, get \d+ of equal or lesser value for %\d+ off', special.lower()):
-                    return
+                    pattern = re.compile(r'^buy (?P<purchase_requirement>\d+) items, get (?P<discounted_quantity>\d+) of equal or lesser value for %(?P<percentage_discount>\d+) off')
+                    match = pattern.match(special.lower()).groupdict()
+                    print("Special: ", match)
             else:
                 total += item['item'].get_price() * item['quantity']
         return total
