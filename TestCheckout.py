@@ -37,3 +37,26 @@ class CheckoutAPICheckoutTestCase(unittest.TestCase):
         self.assertEquals([{"item":self.test_item, "quantity": 1}], self.test_checkout.get_items_in_cart())
         self.test_checkout.remove_item_from_cart("potatoes", 1)
         self.assertEquals([], self.test_checkout.get_items_in_cart())
+
+    def test_add_many_items_to_cart(self):
+        self.test_checkout.add_item_to_cart("potatoes", 4)
+        self.test_checkout.add_item_to_cart("potatoes", 4)
+        self.test_checkout.add_item_to_cart("potatoes", 4)
+        self.assertEquals([{"item":self.test_item, "quantity": 12}], self.test_checkout.get_items_in_cart())
+
+    def test_add_negative_items_to_cart(self):
+        with self.assertRaises(Exception):
+            self.test_checkout.add_item_to_cart("potatoes", -4)
+
+    def test_add_item_to_cart_doesnt_exist(self):
+        with self.assertRaises(Exception):
+            self.test_checkout.add_item_to_cart("oranges", 1)
+
+    def test_add_item_to_store_with_negative_price(self):
+        with self.assertRaises(Exception):
+            self.test_checkout.add_item_to_store("oranges", -1, "each")
+
+    def test_remove_negative_items_from_cart(self):
+        self.test_checkout.add_item_to_cart("potatoes", 4)
+        with self.assertRaises(Exception):
+            self.test_checkout.remove_item_from_cart("potatoes", -3)

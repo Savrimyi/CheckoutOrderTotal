@@ -16,7 +16,7 @@ class Item():
 
     def validate_parameters(self, name, price_per_unit, unit_type):
         if not type(name) == str: raise(ValueError)
-        if not (type(price_per_unit) == int or type(price_per_unit) == float): raise(ValueError)
+        if not (type(price_per_unit) == int or type(price_per_unit) == float) or price_per_unit < 0: raise(ValueError)
         if not unit_type in valid_unit_types: raise(ValueError)
 
     def get_price(self):
@@ -84,7 +84,12 @@ class Checkout():
 
     def add_item_to_cart(self, name, quantity):
         item = self.get_item_information(name)
-        self.cart.append({"item": item, "quantity": quantity})
+        if item is None or quantity < 0: raise(ValueError)
+        item_in_cart = self.get_item_information_from_cart(name)
+        if item_in_cart is not None:
+            item_in_cart['quantity'] += quantity
+        else:
+            self.cart.append({"item": item, "quantity": quantity})
 
     def get_item_information_from_cart(self, name):
         matches = list(filter(lambda x: x['item'].name == name, self.cart))
@@ -95,8 +100,8 @@ class Checkout():
 
     def remove_item_from_cart(self, name, quantity):
         item_in_cart = self.get_item_information_from_cart(name)
-        if item_in_cart is None:
-            raise("This item is not in your cart.")
+        if item_in_cart is None or quantity < 1:
+            raise(ValueError)
         elif item_in_cart['quantity'] > quantity:
             item_in_cart['quantity'] -= quantity
         elif item_in_cart['quantity'] == quantity:
