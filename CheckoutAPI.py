@@ -117,12 +117,18 @@ class Checkout():
                 if re.search(r'^buy \d+ items, get \d+ at %\d+ off', special.lower()):
                     pattern = re.compile(r'^buy (?P<purchase_requirement>\d+) items, get (?P<discounted_quantity>\d+) at %(?P<percentage_discount>\d+) off')
                     match = pattern.match(special.lower()).groupdict()
-                    print("Special: ", match)
+                    minimum_items = int(match['purchase_requirement']) + int(match['discounted_quantity'])
+                    percentage_discount = int(match['percentage_discount']) / 100.0
+                    discounted_items = int(int(item['quantity']) / minimum_items) * int(match['discounted_quantity'])
+                    full_price_items = int((int(item['quantity']) / minimum_items) * int(match['purchase_requirement'])) \
+                        + (int(item['quantity']) % minimum_items)
+                    total += (item['item'].get_price() * full_price_items) + (item['item'].get_price() * percentage_discount * discounted_items)
 
                 elif re.search(r'^buy \d+ items, get \d+ (free|half off)', special.lower()):
                     pattern = re.compile(r'^buy (?P<purchase_requirement>\d+) items, get (?P<discounted_quantity>\d+) (?P<half_or_free>free|half off)')
                     match = pattern.match(special.lower()).groupdict()
                     print("Special: ", match)
+
                 elif re.search(r'^\d+ for \$\d+', special.lower()):
                     pattern = re.compile(r'^(?P<quantity>\d+) for \$(?P<price>\d+)')
                     match = pattern.match(special.lower()).groupdict()
@@ -132,6 +138,7 @@ class Checkout():
                         total += discount_count * float(match['price']) + item['item'].get_price() * remainder
                     else:
                         total += item['item'].get_price() * item['quantity']
+
                 elif re.search(r'^buy \d+ items, get \d+ of equal or lesser value for %\d+ off', special.lower()):
                     pattern = re.compile(r'^buy (?P<purchase_requirement>\d+) items, get (?P<discounted_quantity>\d+) of equal or lesser value for %(?P<percentage_discount>\d+) off')
                     match = pattern.match(special.lower()).groupdict()

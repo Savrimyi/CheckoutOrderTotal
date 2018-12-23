@@ -76,3 +76,20 @@ class CheckoutAPICheckoutTestCase(unittest.TestCase):
         self.assertEquals(self.test_checkout.get_checkout_total(), 15)
         self.test_checkout.remove_item_from_cart("potatoes", 3)
         self.assertEquals(self.test_checkout.get_checkout_total(), 5)
+
+    def test_get_checkout_total_with_percent_off_special(self):
+        self.test_checkout.add_item_to_cart("potatoes", 40)
+        self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 items, get 3 at %56 off")
+        self.assertEquals(self.test_checkout.get_checkout_total(), 180.2)
+
+    def test_get_checkout_total_with_special_and_limit(self):
+        self.test_checkout.add_item_to_cart("potatoes", 40)
+        self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 items, get 3 at %56 off. limit 26.")
+        self.assertEquals(self.test_checkout.get_checkout_total(), 100+16.8+70)
+
+    def test_get_checkout_total_invalidated_special_and_limit(self):
+        self.test_checkout.add_item_to_cart("potatoes", 40)
+        self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 items, get 3 at %56 off. limit 26.")
+        self.assertEquals(self.test_checkout.get_checkout_total(), 100+16.8+70)
+        self.test_checkout.remove_item_from_cart("potatoes", 37)
+        self.assertEquals(self.test_checkout.get_checkout_total(), 15)
