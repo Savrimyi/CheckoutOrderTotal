@@ -66,6 +66,11 @@ class Checkout():
         else:
             raise(ValueError)
 
+    def remove_item_from_store(self, name):
+        item_in_store = self.get_item_information(name)
+        if item_in_store is None: raise(ValueError)
+        self.store.remove(item_in_store)
+
     """ Calculates the checkout total using Item information, including specials and markdowns. """
     def get_checkout_total(self):
         total = 0.0
