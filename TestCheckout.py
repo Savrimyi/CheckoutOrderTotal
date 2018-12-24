@@ -1,8 +1,8 @@
 import unittest
-from CheckoutAPI import Checkout
-from CheckoutAPI import Item
+from Checkout import Checkout
+from Item import Item
 
-class CheckoutAPICheckoutTestCase(unittest.TestCase):
+class CheckoutTestCase(unittest.TestCase):
 
 
     def setUp(self):

@@ -1,8 +1,8 @@
 import unittest
-from CheckoutAPI import Item
+from Item import Item
 
 
-class CheckoutAPIItemTestCase(unittest.TestCase):
+class ItemTestCase(unittest.TestCase):
 
     test_item = Item("potatoes", 5, "each")
 

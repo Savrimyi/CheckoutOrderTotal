@@ -1,4 +1,6 @@
 import unittest
+import socketserver
+import http.server
 from CheckoutAPI import CheckoutAPI
 import sys
 
@@ -18,4 +20,12 @@ def run_api():
     httpd.serve_forever()
 
 if __name__ == '__main__':
-    run_tests()
+    if len(sys.argv) == 2:
+        if sys.argv[1] == "run":
+            run_api()
+        elif sys.argv[1] =="test":
+            run_tests()
+        else:
+            print("Invalid parameters")
+    else:
+        run_tests()
