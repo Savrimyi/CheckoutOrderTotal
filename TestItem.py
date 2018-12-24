@@ -77,8 +77,8 @@ class CheckoutAPIItemTestCase(unittest.TestCase):
 
     def test_set_special_price_equal_or_lesser_value(self):
         #Buy N, get M of equal or lesser value for %X off
-        self.test_item.set_special_price("buy 4 items, get 5 of equal or lesser value for %10 off")
-        self.assertEquals("buy 4 items, get 5 of equal or lesser value for %10 off", self.test_item.get_special_price())
+        self.test_item.set_special_price("buy 4, get 5 of equal or lesser value for %10 off")
+        self.assertEquals("buy 4, get 5 of equal or lesser value for %10 off", self.test_item.get_special_price())
 
     def test_set_special_price_invalid_input(self):
         with self.assertRaises(Exception):
@@ -86,9 +86,9 @@ class CheckoutAPIItemTestCase(unittest.TestCase):
 
     def test_set_special_price_invalid_number_of_items(self):
         with self.assertRaises(Exception):
-            self.test_item.set_special_price("buy -4 items, get 5 of equal or lesser value for %10 off")
+            self.test_item.set_special_price("buy -4, get 5 of equal or lesser value for %10 off")
         with self.assertRaises(Exception):
-            self.test_item.set_special_price("buy 4 items, get -5 of equal or lesser value for %10 off")
+            self.test_item.set_special_price("buy 4, get -5 of equal or lesser value for %10 off")
         with self.assertRaises(Exception):
             self.test_item.set_special_price("-5 for $10")
         with self.assertRaises(Exception):
@@ -98,9 +98,9 @@ class CheckoutAPIItemTestCase(unittest.TestCase):
 
     def test_set_special_price_invalid__percentage_off(self):
         with self.assertRaises(Exception):
-            self.test_item.set_special_price("buy 4 items, get 5 of equal or lesser value for %-10 off")
+            self.test_item.set_special_price("buy 4, get 5 of equal or lesser value for %-10 off")
         with self.assertRaises(Exception):
-            self.test_item.set_special_price("buy 4 items, get 5 of equal or lesser value for %300 off")
+            self.test_item.set_special_price("buy 4, get 5 of equal or lesser value for %300 off")
 
     def test_equals(self):
         test_item_1 = Item("potatoes", 5, "each")

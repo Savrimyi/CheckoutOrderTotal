@@ -103,6 +103,11 @@ class CheckoutAPICheckoutTestCase(unittest.TestCase):
         self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 items, get 3 at %44 off. limit 26.")
         self.assertEquals(self.test_checkout.get_checkout_total(), 100+16.8+70)
 
+    def test_get_checkout_total_with_special_of_equal_or_lesser_value(self):
+        self.test_checkout.add_item_to_cart("potatoes", 40)
+        self.test_checkout.get_item_information("potatoes").set_special_price("buy 10, get 3 of equal or lesser value for %44 off.")
+        self.assertEquals(self.test_checkout.get_checkout_total(), 180.2)
+
     def test_get_checkout_total_invalidated_special_and_limit(self):
         self.test_checkout.add_item_to_cart("potatoes", 40)
         self.test_checkout.get_item_information("potatoes").set_special_price("buy 10 items, get 3 at %44 off. limit 26.")
