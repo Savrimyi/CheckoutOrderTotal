@@ -13,6 +13,7 @@ class Item():
         self.price_per_unit = price_per_unit
         self.unit_type = unit_type
         self.special_price = None
+        self.markdown = 0
 
     def validate_parameters(self, name, price_per_unit, unit_type):
         if not type(name) == str: raise(ValueError)
@@ -20,15 +21,16 @@ class Item():
         if not unit_type in valid_unit_types: raise(ValueError)
 
     def get_price(self):
-        return self.price_per_unit
+        return self.price_per_unit - self.markdown
 
     def update_price(self, new_price):
         self.validate_parameters(self.name, new_price, self.unit_type)
         self.price_per_unit = new_price
+        self.markdown = 0
 
     def markdown_price(self, markdown):
         if markdown is None or markdown < 0: raise(ValueError)
-        self.update_price(self.price_per_unit - markdown)
+        self.markdown = markdown
 
     def get_special_price(self):
         return self.special_price

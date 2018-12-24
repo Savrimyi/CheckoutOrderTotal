@@ -114,3 +114,10 @@ class CheckoutAPICheckoutTestCase(unittest.TestCase):
         self.assertEquals(self.test_checkout.get_checkout_total(), 100+16.8+70)
         self.test_checkout.remove_item_from_cart("potatoes", 37)
         self.assertEquals(self.test_checkout.get_checkout_total(), 15)
+
+    def test_markdown_price(self):
+        start_price = self.test_checkout.get_item_information("potatoes").get_price()
+        markdown = 4
+        self.test_checkout.get_item_information("potatoes").markdown_price(markdown)
+        end_price = self.test_checkout.get_item_information("potatoes").get_price()
+        self.assertEquals(end_price, (start_price - markdown))
