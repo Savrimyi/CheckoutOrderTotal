@@ -129,7 +129,27 @@ class Checkout():
                 #     match = pattern.match(special).groupdict()
                 #     print("Special: ", match)
 
-            #There is no discount applied. 
+            #There is no discount applied.
             else:
                 total += item['item'].get_price() * item['quantity']
         return total
+
+    """ Returns the Item in the form of a dictionary """
+    def dict(self):
+        checkout_dict = {}
+        checkout_dict['items_in_store'] = self.store
+        checkout_dict['items_in_cart'] = self.cart
+        return checkout_dict
+
+    """ Returns the Item as JSON, to be used by API """
+    def json(self):
+        checkout_dict = {}
+        checkout_dict['items_in_store'] = [x.json() for x in self.store]
+        checkout_dict['items_in_cart'] = [{"item": x['item'].json(), "quantity": x['quantity']} for x in self.cart]
+        return json.dumps(checkout_dict)
+
+    def get_store_as_json(self):
+        return json.dumps([x.json() for x in self.store])
+
+    def get_cart_as_json(self):
+        return json.dumps([{"item": x['item'].json(), "quantity": x['quantity']} for x in self.cart])

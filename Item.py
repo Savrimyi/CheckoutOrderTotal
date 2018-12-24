@@ -65,3 +65,17 @@ class Item():
                 self.price_per_unit == other.price_per_unit and \
                 self.unit_type == other.unit_type and \
                 self.special_price == other.special_price
+
+    """ Returns the Item in the form of a dictionary """
+    def dict(self):
+        item_dict = {}
+        item_dict['name'] = self.name
+        item_dict['price_per_unit'] = self.price_per_unit
+        item_dict['unit_type'] = self.unit_type
+        item_dict['special_price'] = self.special_price
+        item_dict['markdown'] = self.markdown
+        return item_dict
+
+    """ Returns the Item as JSON, to be used by API """
+    def json(self):
+        return json.dumps(self.dict())

@@ -17,7 +17,7 @@ class CheckoutAPITestCase(unittest.TestCase):
     #Sets up variables for the tests (to be shared for multiple tests)
     def setUp(self):
         self.test_item = {"name": "bananas", "price_per_unit": 4, "unit_type": "per pound"}
-        self.test_special = {"special": "buy 10 items, get 3 at %56 off"}
+        self.test_special = {"item_name": "bananas", "special": "buy 10 items, get 3 at %56 off"}
         self.test_markdown = {"item_name": "bananas", "markdown_price": 1.2}
         self.test_item_for_cart = {"name": "bananas", "quantity": 10}
 
