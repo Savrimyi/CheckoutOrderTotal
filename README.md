@@ -20,7 +20,7 @@ Alternatively, you can use the requirements.txt file included in the project by 
 Tests are named with the structure 'Test*.py' and are cumulatively run by the RunCheckoutAPI.py file. 
 Command to run the tests: 'python[3.7] RunCheckoutAPI.py' or 'python[3.7] RunCheckoutAPI.py test'
 
-# Running the API
+## Running the API
 The API is also run with the RunCheckoutAPI.py file. 
 The command to run the API is: 'python[3.7] RunCheckoutAPI.py run'
 This will run the API on port 8080 by default. This is configurable in the RunCheckoutAPI.py file. 
