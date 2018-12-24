@@ -3,8 +3,13 @@ from Item import Item
 
 
 class ItemTestCase(unittest.TestCase):
+    """
+        Test cases for the Item object.
+    """
 
-    test_item = Item("potatoes", 5, "each")
+    #This runs before tests; used to set up.
+    def setUp(self):
+        self.test_item = Item("potatoes", 5, "each")
 
     def test_init_item_with_info(self):
         try:

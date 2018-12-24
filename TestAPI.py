@@ -3,7 +3,7 @@ import requests
 import json
 
 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-url = "http://localhost/"
+url = "http://localhost:8080/"
 OK = 200
 CREATED = 201
 NOT_FOUND = 404
@@ -11,7 +11,11 @@ BAD_REQUEST = 400
 COMPLETED_NO_CONTENT = 204
 
 class CheckoutAPITestCase(unittest.TestCase):
+    """
+        Test cases for the HTTP API
+    """
 
+    #Sets up variables for the tests (to be shared for multiple tests)
     def setUp(self):
         self.test_item = {"name": "bananas", "price_per_unit": 4, "unit_type": "per pound"}
         self.test_special = {"special": "buy 10 items, get 3 at %56 off"}
@@ -27,11 +31,11 @@ class CheckoutAPITestCase(unittest.TestCase):
         self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_add_item_invalid_request_type(self):
-        response = requests.get(url+'api/add_item_to_store/', data=json.dumps(self.test_item), headers=headers)
+        response = requests.get(url+'api/add_item_to_store/', headers=headers)
         self.assertEquals(response.status_code, NOT_FOUND)
-        response = requests.put(url+'api/add_item_to_store/', data=json.dumps(self.test_item), headers=headers)
+        response = requests.put(url+'api/add_item_to_store/', headers=headers)
         self.assertEquals(response.status_code, NOT_FOUND)
-        response = requests.delete(url+'api/add_item_to_store/', data=json.dumps(self.test_item), headers=headers)
+        response = requests.delete(url+'api/add_item_to_store/', headers=headers)
         self.assertEquals(response.status_code, NOT_FOUND)
 
     def test_set_special_price_POST(self):
@@ -43,11 +47,11 @@ class CheckoutAPITestCase(unittest.TestCase):
         self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_set_special_price_invalid_request_type(self):
-        response = requests.get(url+'api/set_special_price/', data=json.dumps(self.test_special), headers=headers)
+        response = requests.get(url+'api/set_special_price/', headers=headers)
         self.assertEquals(response.status_code, NOT_FOUND)
-        response = requests.put(url+'api/set_special_price/', data=json.dumps(self.test_special), headers=headers)
+        response = requests.put(url+'api/set_special_price/', headers=headers)
         self.assertEquals(response.status_code, NOT_FOUND)
-        response = requests.delete(url+'api/set_special_price/', data=json.dumps(self.test_special), headers=headers)
+        response = requests.delete(url+'api/set_special_price/', headers=headers)
         self.assertEquals(response.status_code, NOT_FOUND)
 
     def test_markdown_price_POST(self):
@@ -59,11 +63,11 @@ class CheckoutAPITestCase(unittest.TestCase):
         self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_markdown_invalid_request_type(self):
-        response = requests.get(url+'api/markdown_price/', data=json.dumps(self.test_markdown), headers=headers)
+        response = requests.get(url+'api/markdown_price/', headers=headers)
         self.assertEquals(response.status_code,NOT_FOUND)
-        response = requests.put(url+'api/markdown_price/', data=json.dumps(self.test_markdown), headers=headers)
+        response = requests.put(url+'api/markdown_price/', headers=headers)
         self.assertEquals(response.status_code,NOT_FOUND)
-        response = requests.delete(url+'api/markdown_price/', data=json.dumps(self.test_markdown), headers=headers)
+        response = requests.delete(url+'api/markdown_price/', headers=headers)
         self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_get_item_info_GET(self):
@@ -121,11 +125,11 @@ class CheckoutAPITestCase(unittest.TestCase):
         self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_add_items_to_cart_invalid_request_type(self):
-        response = requests.get(url+'api/add_item_to_cart/', data=json.dumps(self.test_item_for_cart), headers=headers)
+        response = requests.get(url+'api/add_item_to_cart/', headers=headers)
         self.assertEquals(response.status_code,NOT_FOUND)
-        response = requests.put(url+'api/add_item_to_cart/', data=json.dumps(self.test_item_for_cart), headers=headers)
+        response = requests.put(url+'api/add_item_to_cart/', headers=headers)
         self.assertEquals(response.status_code,NOT_FOUND)
-        response = requests.delete(url+'api/add_item_to_cart/', data=json.dumps(self.test_item_for_cart), headers=headers)
+        response = requests.delete(url+'api/add_item_to_cart/', headers=headers)
         self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_get_items_in_cart_GET(self):
@@ -133,11 +137,11 @@ class CheckoutAPITestCase(unittest.TestCase):
         self.assertEquals(response.status_code,OK)
 
     def test_get_items_in_cart_invalid_request_type(self):
-        response = requests.post(url+'api/get_items_in_cart/', json={"key": "value"})
+        response = requests.post(url+'api/get_items_in_cart/')
         self.assertEquals(response.status_code,NOT_FOUND)
-        response = requests.put(url+'api/get_items_in_cart/', json={"key": "value"})
+        response = requests.put(url+'api/get_items_in_cart/')
         self.assertEquals(response.status_code,NOT_FOUND)
-        response = requests.delete(url+'api/get_items_in_cart/', json={"key": "value"})
+        response = requests.delete(url+'api/get_items_in_cart/')
         self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_get_item_info_from_cart_GET(self):
@@ -146,15 +150,15 @@ class CheckoutAPITestCase(unittest.TestCase):
         self.assertEquals(response.json(), test_item_for_cart)
 
     def test_get_item_info_from_cart_doesnt_exist(self):
-        response = requests.get(url+'api/get_item_info_cart/not a real item', json={"key": "value"})
+        response = requests.get(url+'api/get_item_info_cart/not a real item')
         self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_get_items_from_cart_invalid_request_type(self):
-        response = requests.post(url+'api/get_item_info_cart/'+self.test_item['name'], json={"key": "value"})
+        response = requests.post(url+'api/get_item_info_cart/'+self.test_item['name'])
         self.assertEquals(response.status_code,NOT_FOUND)
-        response = requests.put(url+'api/get_item_info_cart/'+self.test_item['name'], json={"key": "value"})
+        response = requests.put(url+'api/get_item_info_cart/'+self.test_item['name'])
         self.assertEquals(response.status_code,NOT_FOUND)
-        response = requests.delete(url+'api/get_item_info_cart/'+self.test_item['name'], json={"key": "value"})
+        response = requests.delete(url+'api/get_item_info_cart/'+self.test_item['name'])
         self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_remove_item_from_cart_DELETE(self):
@@ -178,9 +182,9 @@ class CheckoutAPITestCase(unittest.TestCase):
         self.assertEquals(response.status_code,OK)
 
     def test_get_checkout_total_bad_request_type(self):
-        response = requests.post(url+'api/get_checkout_total/', json={"key": "value"})
+        response = requests.post(url+'api/get_checkout_total/')
         self.assertEquals(response.status_code,NOT_FOUND)
-        response = requests.put(url+'api/get_checkout_total/', json={"key": "value"})
+        response = requests.put(url+'api/get_checkout_total/')
         self.assertEquals(response.status_code,NOT_FOUND)
-        response = requests.delete(url+'api/get_checkout_total/', json={"key": "value"})
+        response = requests.delete(url+'api/get_checkout_total/')
         self.assertEquals(response.status_code,NOT_FOUND)

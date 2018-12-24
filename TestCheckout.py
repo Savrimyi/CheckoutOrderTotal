@@ -3,8 +3,11 @@ from Checkout import Checkout
 from Item import Item
 
 class CheckoutTestCase(unittest.TestCase):
+    """
+        Test cases for the Checkout objects.
+    """
 
-
+    #Sets up the environment for testing.
     def setUp(self):
         self.test_checkout = Checkout()
         self.test_item = Item("potatoes", 5, "each")
