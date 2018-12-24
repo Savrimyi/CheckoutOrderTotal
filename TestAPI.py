@@ -7,7 +7,6 @@ url = "http://localhost:8080/"
 OK = 200
 CREATED = 201
 NOT_FOUND = 404
-BAD_REQUEST = 400
 COMPLETED_NO_CONTENT = 204
 
 class CheckoutAPITestCase(unittest.TestCase):
@@ -93,7 +92,7 @@ class CheckoutAPITestCase(unittest.TestCase):
 
     def test_remove_item_not_in_store_DELETE(self):
         response = requests.delete(url+'api/delete_from_store/not a real item', headers=headers)
-        self.assertEquals(response.status_code,BAD_REQUEST)
+        self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_remove_item_invalid_request_type(self):
         response = requests.get(url+'api/delete_from_store/'+self.test_item['name'], headers=headers)
