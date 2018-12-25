@@ -157,4 +157,4 @@ class Checkout():
         return json.dumps({"items_in_store": [x.json() for x in self.store]})
 
     def get_cart_as_json(self):
-        return json.dumps({"item_in_cart": [{"item": x['item'].json(), "quantity": x['quantity']} for x in self.cart]})
+        return json.dumps({"items_in_cart": [{"item": x['item'].json(), "quantity": x['quantity']} for x in self.cart]})

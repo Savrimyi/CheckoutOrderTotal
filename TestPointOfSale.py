@@ -1,6 +1,6 @@
 import unittest
 from PointOfSale import PointOfSale
-
+import json
 
 class PointOfSaleTestCase(unittest.TestCase):
     """
@@ -33,19 +33,23 @@ class PointOfSaleTestCase(unittest.TestCase):
 
     def test_valid_input_get_item_from_store(self):
         item  = self.test_point_of_sale.call_api_get_item_info("carrots")
+        print(item)
         self.assertEquals(item['name'], "carrots")
 
     def test_valid_input_get_items_in_store(self):
         items_in_store  = self.test_point_of_sale.call_api_get_items_in_store()
-        self.assertEquals(items_in_store[0]['name'], "carrots")
+        item_names = [json.loads(item)['name'] for item in items_in_store]
+        self.assertTrue("carrots" in item_names)
 
     def test_valid_input_get_items_in_cart(self):
         items_in_cart  = self.test_point_of_sale.call_api_get_items_in_cart()
-        self.assertEquals(items_in_cart[0]['name'], "carrots")
+        item_names = [json.loads(item)['name'] for item in items_in_cart]
+        self.assertTrue("carrots" in item_names)
 
     def test_valid_input_get_item_info_cart(self):
         item  = self.test_point_of_sale.call_api_get_item_info_cart("carrots")
-        self.assertEquals(item['name'], "carrots")
+        print(item)
+        self.assertEquals(item['item']['name'], "carrots")
 
     def test_valid_input_get_checkout_total(self):
         total  = self.test_point_of_sale.call_api_get_checkout_total()

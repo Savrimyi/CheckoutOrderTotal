@@ -108,7 +108,8 @@ class CheckoutAPITestCase(unittest.TestCase):
     def test_get_items_in_store_GET(self):
         response = requests.get(url+'api/get_items_in_store/', json={"key": "value"})
         self.assertEquals(response.status_code,OK)
-        self.assertEquals(json.loads(response.json()['items_in_store'][0])['name'], self.test_item['name'])
+        item_names = [json.loads(item)['name'] for item in response.json()['items_in_store']]
+        self.assertTrue(self.test_item['name'] in item_names)
 
     def test_get_items_in_store_invalid_request_type(self):
         response = requests.post(url+'api/get_items_in_store/', json={"key": "value"})
