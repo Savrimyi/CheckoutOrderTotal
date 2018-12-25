@@ -71,8 +71,85 @@ class PointOfSale():
             return False
 
     def handle_user_input(self, user_input):
-        return
+        user_input = user_input.lower()
+        if user_input == "help" or user_input == "?":
+            self.print_help_menu()
+        elif user_input == "add item":
+            item_name = input("Item Name: ")
+            price_per_unit = int(input("Price per Unit: "))
+            unit_type = input("Unit Type [each | per pound]: ")
+            item = self.call_api_post_add_item_to_store(item_name, price_per_unit, unit_type)
+            print("Item Added.", item)
+        elif user_input == "delete item":
+            item_name = input("Item Name: ")
+            self.call_api_delete_from_store(item_name)
+            print("Item deleted.")
+        elif user_input == "markdown":
+            item_name = input("Item Name: ")
+            markdown_amount = int(input("Markdown Amount: "))
+            item = self.call_api_post_markdown_price(item_name, markdown_amount)
+            print("Markdown applied. ", item)
+        elif user_input == "special":
+            item_name = input("Item Name: ")
+            special = input("Special: ")
+            item = self.call_api_post_set_special_price(item_name, special)
+            print("Special applied. ", item)
+        elif user_input == "item info store":
+            item_name = input("Item Name: ")
+            item = self.call_api_get_item_info(item_name)
+            print(item)
+        elif user_input == "get store":
+            items = self.call_api_get_items_in_store()
+            print("Items for sale: ", items)
+        elif user_input == "scan item":
+            item_name = input("Item Name: ")
+            quantity = int(input("Quantity: "))
+            self.call_api_post_add_item_to_cart(item_name, quantity)
+            print("%d %s added to cart." % (quantity, item_name))
+        elif user_input == "remove item":
+            item_name = input("Item Name: ")
+            quantity = int(input("Quantity: "))
+            self.call_api_delete_from_cart(item_name, quantity)
+            print("%d %s removed from cart." % (quantity, item_name))
+        elif user_input == "item info cart":
+            item_name = input("Item Name: ")
+            item = self.call_api_get_item_info_cart(item_name)
+            print(item)
+        elif user_input == "get cart":
+            items = self.call_api_get_items_in_cart()
+            print("Items in cart: ", items)
+        elif user_input == "total":
+            total = self.call_api_get_checkout_total()
+            print("Total: ", total)
+        else:
+            print("Command not recognized. Try 'help' to see a list of commands.")
 
     def run(self):
         while True:
-            return
+            user_input = input("Enter a command: ")
+            self.handle_user_input(user_input)
+            print()
+
+    def print_help_menu(self):
+        help_menu = """
+                    You may use the following commands to interact with the Point of Sale system:
+                        'help' - Print this menu.
+                        'add item' - Add an item to the store.
+                        'delete item' - Delete an item from the store.
+                        'markdown' - Markdown the price of an item.
+                        'special' - Add a special discount to an item.
+                        'item info store' - Get information about an item.
+                        'get store' - Get a list of items for sale in the store.
+                        'scan item' - Scan an item to add it to the customer's cart.
+                        'remove item' - Remove an item from the customer's cart.
+                        'item info cart' - Get information about an item in the customer's cart.
+                        'get cart' - Get a list of items in the customer's cart.
+                        'total' - Get the checkout total.
+                    """
+        print(help_menu)
+
+if __name__ == '__main__':
+
+    point_of_sale = PointOfSale()
+    point_of_sale.print_help_menu()
+    point_of_sale.run()
