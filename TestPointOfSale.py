@@ -25,7 +25,7 @@ class PointOfSaleTestCase(unittest.TestCase):
 
     def test_valid_input_markdown_price(self):
         item  = self.test_point_of_sale.call_api_post_markdown_price("carrots", 1)
-        self.assertEquals(item['price_per_unit'], 1)
+        self.assertEquals(item['markdown'], 1)
 
     def test_valid_input_add_item_to_cart(self):
         item  = self.test_point_of_sale.call_api_post_add_item_to_cart("carrots", 3)
@@ -38,7 +38,6 @@ class PointOfSaleTestCase(unittest.TestCase):
         self.assertEquals(item['name'], "carrots")
 
     def test_valid_input_get_items_in_store(self):
-
         items_in_store  = self.test_point_of_sale.call_api_get_items_in_store()
         item_names = [json.loads(item)['name'] for item in items_in_store]
         self.assertTrue("carrots" in item_names)
