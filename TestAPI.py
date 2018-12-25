@@ -22,6 +22,7 @@ class CheckoutAPITestCase(unittest.TestCase):
         self.test_item_for_cart = {"name": "bananas", "quantity": 10}
 
     def test_add_item_to_store_POST(self):
+        requests.delete(url+'api/delete_from_store/'+self.test_item['name'], headers=headers)
         response = requests.post(url+'api/add_item_to_store/', data=json.dumps(self.test_item), headers=headers)
         self.assertEquals(response.status_code,CREATED)
 
@@ -118,6 +119,7 @@ class CheckoutAPITestCase(unittest.TestCase):
         self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_add_item_to_cart_POST(self):
+        requests.post(url+'api/add_item_to_store/', data=json.dumps(self.test_item), headers=headers)
         response = requests.post(url+'api/add_item_to_cart/', data=json.dumps(self.test_item_for_cart), headers=headers)
         self.assertEquals(response.status_code,CREATED)
 
@@ -148,7 +150,7 @@ class CheckoutAPITestCase(unittest.TestCase):
     def test_get_item_info_from_cart_GET(self):
         response = requests.get(url+'api/get_item_info_cart/'+self.test_item['name'], json={"key": "value"})
         self.assertEquals(response.status_code,OK)
-        self.assertEquals(response.json(), test_item_for_cart)
+        self.assertEquals(response.json()['item']['name'], self.test_item_for_cart['name'])
 
     def test_get_item_info_from_cart_doesnt_exist(self):
         response = requests.get(url+'api/get_item_info_cart/not a real item')
@@ -163,7 +165,7 @@ class CheckoutAPITestCase(unittest.TestCase):
         self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_remove_item_from_cart_DELETE(self):
-        response = requests.delete(url+'api/delete_from_cart/'+self.test_item['name'], headers=headers)
+        response = requests.delete(url+'api/delete_from_cart/'+self.test_item['name'], data = json.dumps({"quantity": 1}), headers=headers)
         self.assertEquals(response.status_code,COMPLETED_NO_CONTENT)
 
     def test_remove_item_from_cart_doesnt_exist(self):

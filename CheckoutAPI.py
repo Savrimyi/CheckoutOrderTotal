@@ -59,8 +59,8 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
                 self.send_response(OK)
                 self.send_header('Content-Type', 'application/json')
                 self.end_headers()
-                self.wfile.write(json.dumps({"item": item_info['item'].dict(), "quantity": item_info['item']}).encode())
-                return json.dumps({"item": item_info['item'].json(), "quantity": item_info['item']})
+                self.wfile.write(json.dumps({"item": item_info['item'].dict(), "quantity": item_info['quantity']}).encode())
+                return json.dumps({"item": item_info['item'].dict(), "quantity": item_info['quantity']})
         elif '/api/get_checkout_total/' in self.path:
             checkout_total = self.checkout.get_checkout_total()
             #Turn into JSON and send back
@@ -93,11 +93,14 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
         #Use post data and call Checkout functions
         if '/api/add_item_to_store/' in self.path:
             #Get item info from POST
-            action_result = self.checkout.add_item_to_store(post_dict['name'],post_dict['price_per_unit'],post_dict['unit_type'])
-            #If action completed normally, send CREATED response, else BAD_REQUEST
-            self.send_response(CREATED)
-            self.end_headers()
-            return "Completed."
+            try:
+                action_result = self.checkout.add_item_to_store(post_dict['name'],post_dict['price_per_unit'],post_dict['unit_type'])
+                #If action completed normally, send CREATED response, else BAD_REQUEST
+                self.send_response(CREATED)
+                self.end_headers()
+                return "Completed."
+            except ValueError:
+                pass #(will return 404 not found below)
         elif '/api/set_special_price/' in self.path:
             #Get item info from POST
             action_result = self.checkout.get_item_information(post_dict['item_name'])
@@ -121,7 +124,7 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
                 self.send_response(CREATED)
                 self.end_headers()
                 return "Completed."
-            except ValueError:
+            except ValueError as e:
                 pass #(will return 404 below)
 
         #Send error response if no matching path or no results found by a query.
