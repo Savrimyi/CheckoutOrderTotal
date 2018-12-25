@@ -18,42 +18,51 @@ class PointOfSale():
 
     def call_api_get_item_info(self, item_name):
         item = requests.get(url+'api/get_item_info/'+item_name, json={"key": "value"}, headers=headers)
+        if item.status_code == NOT_FOUND: return None
         return item.json()
 
     def call_api_get_items_in_store(self):
         items_in_store = requests.get(url+'api/get_items_in_store/', json={"key": "value"})
+        if items_in_store.status_code == NOT_FOUND: return None
         return items_in_store.json()['items_in_store']
 
     def call_api_get_items_in_cart(self):
         items_in_cart = requests.get(url+'api/get_items_in_cart/', json={"key": "value"})
+        if items_in_cart.status_code == NOT_FOUND: return None
         return items_in_cart.json()['items_in_cart']
 
     def call_api_get_item_info_cart(self, item_name):
         item_info = requests.get(url+'api/get_item_info_cart/'+item_name, json={"key": "value"})
+        if item_info.status_code == NOT_FOUND: return None
         return item_info.json()
 
     def call_api_get_checkout_total(self):
         checkout_total = requests.get(url+'api/get_checkout_total/', json={"key": "value"})
+        if checkout_total.status_code == NOT_FOUND: return None
         return checkout_total.json()['total']
 
     def call_api_post_add_item_to_store(self, item_name, price_per_unit, unit_type):
         item_dictionary = {"name":item_name, "price_per_unit": price_per_unit, "unit_type":unit_type}
         add_item_response = requests.post(url+'api/add_item_to_store/', data=json.dumps(item_dictionary), headers=headers)
+        if add_item_response.status_code == NOT_FOUND: return None
         return self.call_api_get_item_info(item_name)
 
     def call_api_post_set_special_price(self, item_name, special):
         special_dictionary = {"item_name": item_name, "special": special}
         set_special_response = requests.post(url+'api/set_special_price/', data=json.dumps(special_dictionary), headers=headers)
+        if set_special_response.status_code == NOT_FOUND: return None
         return self.call_api_get_item_info(item_name)
 
     def call_api_post_markdown_price(self, item_name, markdown_amount):
         markdown_dictionary = {"item_name": item_name, "markdown_price": markdown_amount}
         markdown_response = requests.post(url+'api/markdown_price/', data=json.dumps(markdown_dictionary), headers=headers)
+        if markdown_response.status_code == NOT_FOUND: return None
         return self.call_api_get_item_info(item_name)
 
     def call_api_post_add_item_to_cart(self, item_name, quantity):
         cart_dictionary = {"name": item_name, "quantity": quantity}
         add_to_cart_response = requests.post(url+'api/add_item_to_cart/', data=json.dumps(cart_dictionary), headers=headers)
+        if add_to_cart_response.status_code == NOT_FOUND: return None
         return self.call_api_get_item_info_cart(item_name)
 
     def call_api_delete_from_store(self, item_name):
@@ -79,16 +88,25 @@ class PointOfSale():
             price_per_unit = int(input("Price per Unit: "))
             unit_type = input("Unit Type [each | per pound]: ")
             item = self.call_api_post_add_item_to_store(item_name, price_per_unit, unit_type)
-            print("Item Added.", item)
+            if item is None:
+                print("Unable to add item. Check store to see if it is already in stock.")
+            else:
+                print("Item Added.", item)
         elif user_input == "delete item":
             item_name = input("Item Name: ")
-            self.call_api_delete_from_store(item_name)
-            print("Item deleted.")
+            result = self.call_api_delete_from_store(item_name)
+            if result:
+                print("Item deleted.")
+            else:
+                print("Item not found!")
         elif user_input == "markdown":
             item_name = input("Item Name: ")
-            markdown_amount = int(input("Markdown Amount: "))
+            markdown_amount = float(input("Markdown Amount: "))
             item = self.call_api_post_markdown_price(item_name, markdown_amount)
-            print("Markdown applied. ", item)
+            if item is None:
+                print("Item not found!")
+            else:
+                print("Markdown applied. ", item)
         elif user_input == "special":
             item_name = input("Item Name: ")
             special = input("Special: ")
@@ -97,24 +115,36 @@ class PointOfSale():
         elif user_input == "item info store":
             item_name = input("Item Name: ")
             item = self.call_api_get_item_info(item_name)
-            print(item)
+            if item is None:
+                print("Item not found!")
+            else:
+                print(item)
         elif user_input == "get store":
             items = self.call_api_get_items_in_store()
             print("Items for sale: ", items)
         elif user_input == "scan item":
             item_name = input("Item Name: ")
-            quantity = int(input("Quantity: "))
-            self.call_api_post_add_item_to_cart(item_name, quantity)
-            print("%d %s added to cart." % (quantity, item_name))
+            quantity = float(input("Quantity: "))
+            result = self.call_api_post_add_item_to_cart(item_name, quantity)
+            if result is None:
+                print("Item not found!")
+            else:
+                print("%d %s added to cart." % (quantity, item_name))
         elif user_input == "remove item":
             item_name = input("Item Name: ")
-            quantity = int(input("Quantity: "))
-            self.call_api_delete_from_cart(item_name, quantity)
-            print("%d %s removed from cart." % (quantity, item_name))
+            quantity = float(input("Quantity: "))
+            result = self.call_api_delete_from_cart(item_name, quantity)
+            if result:
+                print("%d %s removed from cart." % (quantity, item_name))
+            else:
+                print("Item not found!")
         elif user_input == "item info cart":
             item_name = input("Item Name: ")
             item = self.call_api_get_item_info_cart(item_name)
-            print(item)
+            if item is not None:
+                print(item)
+            else:
+                print("Item not found!")
         elif user_input == "get cart":
             items = self.call_api_get_items_in_cart()
             print("Items in cart: ", items)
@@ -126,9 +156,12 @@ class PointOfSale():
 
     def run(self):
         while True:
-            user_input = input("Enter a command: ")
-            self.handle_user_input(user_input)
-            print()
+            try:
+                user_input = input("Enter a command: ")
+                self.handle_user_input(user_input)
+                print()
+            except Exception as e:
+                print("Invalid input.")
 
     def print_help_menu(self):
         help_menu = """
