@@ -19,22 +19,27 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         #Parse path and call Checkout functions
         if '/api/get_item_info/' in self.path:
-            item_name = self.path.split('/')[2]
+            item_name = self.path.split('/')[3]
             item_info = self.checkout.get_item_information(item_name)
             #Turn into JSON and send back
             if item_info is None:
                 pass
             else:
                 self.send_response(OK)
+                self.send_header('Content-Type', 'application/json')
                 self.end_headers()
+                self.wfile.write(item_info.json().encode())
                 return item_info.json()
+
         elif '/api/get_items_in_store/' in self.path:
             #items_list = self.checkout.get_items_in_store()
             items_list = self.checkout.get_store_as_json()
             #Turn into JSON and send back
             if items_list is not None:
                 self.send_response(OK)
+                self.send_header('Content-Type', 'application/json')
                 self.end_headers()
+                self.wfile.write(items_list.encode())
                 return items_list
         elif '/api/get_items_in_cart/' in self.path:
             #items_list = self.checkout.get_items_in_cart()
@@ -42,21 +47,27 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
             if items_list is not None:
                 #Turn into JSON and send back
                 self.send_response(OK)
+                self.send_header('Content-Type', 'application/json')
                 self.end_headers()
+                self.wfile.write(items_list.encode())
                 return items_list
         elif '/api/get_item_info_cart/' in self.path:
-            item_name = self.path.split('/')[2]
+            item_name = self.path.split('/')[3]
             item_info = self.checkout.get_item_information_from_cart(item_name)
             if item_info is not None:
                 #Turn into JSON and send back
                 self.send_response(OK)
+                self.send_header('Content-Type', 'application/json')
                 self.end_headers()
-                return item_info.json()
+                self.wfile.write(json.dumps({"item": item_info['item'].dict(), "quantity": item_info['item']}).encode())
+                return json.dumps({"item": item_info['item'].json(), "quantity": item_info['item']})
         elif '/api/get_checkout_total/' in self.path:
             checkout_total = self.checkout.get_checkout_total()
             #Turn into JSON and send back
             self.send_response(OK)
+            self.send_header('Content-Type', 'application/json')
             self.end_headers()
+            self.wfile.write(json.dumps({"total": checkout_total}).encode())
             return json.dumps({"total": checkout_total})
 
         #Runs if there are no matches or an exception is handled in a matching block
@@ -68,13 +79,16 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
-        if post_data is None or post_data == b'':
+        # if post_data is None or post_data == b'':
+        #     self.send_response(NOT_FOUND)
+        #     self.end_headers()
+        #     return "Failed."
+        try:
+            post_dict = json.loads(post_data)
+        except ValueError as e:
             self.send_response(NOT_FOUND)
             self.end_headers()
             return "Failed."
-
-        post_dict = json.loads(post_data)
-        print(post_dict)
 
         #Use post data and call Checkout functions
         if '/api/add_item_to_store/' in self.path:
@@ -86,11 +100,12 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
             return "Completed."
         elif '/api/set_special_price/' in self.path:
             #Get item info from POST
-            action_result = self.checkout.get_item_information(post_dict['item_name']).set_special_price(post_dict['special'])
-            #If action completed normally, send CREATED response, else BAD_REQUEST
-            self.send_response(OK)
-            self.end_headers()
-            return "Completed."
+            action_result = self.checkout.get_item_information(post_dict['item_name'])
+            if action_result is not None:
+                action_result.set_special_price(post_dict['special'])
+                self.send_response(OK)
+                self.end_headers()
+                return "Completed."
         elif '/api/markdown_price/' in self.path:
             #Get item info from POST
             action_result = self.checkout.get_item_information(post_dict['item_name']).markdown_price(post_dict['markdown_price'])
@@ -100,11 +115,14 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
             return "Completed."
         elif '/api/add_item_to_cart/' in self.path:
             #Get item info from POST
-            action_result = self.checkout.add_item_to_cart(post_dict['name'],post_dict['quantity'])
-            #If action completed normally, send CREATED response, else BAD_REQUEST
-            self.send_response(CREATED)
-            self.end_headers()
-            return "Completed."
+            try:
+                action_result = self.checkout.add_item_to_cart(post_dict['name'],post_dict['quantity'])
+                #If action completed normally, send CREATED response, else BAD_REQUEST
+                self.send_response(CREATED)
+                self.end_headers()
+                return "Completed."
+            except ValueError:
+                pass #(will return 404 below)
 
         #Send error response if no matching path or no results found by a query.
         self.send_response(NOT_FOUND)
@@ -118,22 +136,23 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
 
         #Get data and call functions, handle errors
         if '/api/delete_from_store/' in self.path:
-            item_name = self.path.split('/')[2]
+            item_name = self.path.split('/')[3]
             item_info = self.checkout.get_item_information(item_name)
             if item_info is not None:
                 self.checkout.remove_item_from_store(item_name)
                 self.send_response(COMPLETED_NO_CONTENT)
                 self.end_headers()
+                return "Completed."
 
         elif '/api/delete_from_cart' in self.path:
-            item_name = self.path.split('/')[2]
+            item_name = self.path.split('/')[3]
             item_info = self.checkout.get_item_information_from_cart(item_name)
-            if item_info is not None and post_data is not None and post_data != '':
+            if item_info is not None and post_data is not None and post_data != b'':
                 post_dict = json.loads(post_data)
                 self.checkout.remove_item_from_cart(item_name, post_dict['quantity'])
                 self.send_response(COMPLETED_NO_CONTENT)
                 self.end_headers()
-                return ""
+                return "Completed."
 
         #Send failure response if no data found or an error occurs
         self.send_response(NOT_FOUND)

@@ -2,7 +2,7 @@ import unittest
 import requests
 import json
 
-headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+headers = {'Content-type': 'application/json'}
 url = "http://localhost:8080/"
 OK = 200
 CREATED = 201
@@ -38,6 +38,8 @@ class CheckoutAPITestCase(unittest.TestCase):
         self.assertEquals(response.status_code, NOT_FOUND)
 
     def test_set_special_price_POST(self):
+        requests.post(url+'api/add_item_to_store/', data=json.dumps(self.test_item), headers=headers)
+        #print(requests.get(url+'api/get_items_in_store/', json={"key": "value"}).json())
         response = requests.post(url+'api/set_special_price/', data=json.dumps(self.test_special), headers=headers)
         self.assertEquals(response.status_code,OK)
 
@@ -70,9 +72,9 @@ class CheckoutAPITestCase(unittest.TestCase):
         self.assertEquals(response.status_code,NOT_FOUND)
 
     def test_get_item_info_GET(self):
-        response = requests.get(url+'api/get_item_info/'+self.test_item['name'], json={"key": "value"})
+        response = requests.get(url+'api/get_item_info/'+self.test_item['name'], json={"key": "value"}, headers=headers)
         self.assertEquals(response.status_code,OK)
-        self.assertEquals(response.json(), test_item)
+        self.assertEquals(response.json()['name'], self.test_item['name'])
 
     def test_get_item_invalid_request_type(self):
         response = requests.post(url+'api/get_item_info/'+self.test_item['name'], headers=headers)
@@ -105,7 +107,7 @@ class CheckoutAPITestCase(unittest.TestCase):
     def test_get_items_in_store_GET(self):
         response = requests.get(url+'api/get_items_in_store/', json={"key": "value"})
         self.assertEquals(response.status_code,OK)
-        self.assertEquals(response.json(), [test_item])
+        self.assertEquals(json.loads(response.json()['items_in_store'][0])['name'], self.test_item['name'])
 
     def test_get_items_in_store_invalid_request_type(self):
         response = requests.post(url+'api/get_items_in_store/', json={"key": "value"})
