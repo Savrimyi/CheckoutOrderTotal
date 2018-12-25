@@ -23,7 +23,7 @@ class PointOfSale():
     def call_api_get_checkout_total(self):
         return
 
-    def call_api_post_add_items_to_store(self):
+    def call_api_post_add_item_to_store(self):
         return
 
     def call_api_post_set_special_price(self):
