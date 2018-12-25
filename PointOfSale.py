@@ -26,7 +26,7 @@ class PointOfSale():
 
     def call_api_get_items_in_cart(self):
         items_in_cart = requests.get(url+'api/get_items_in_cart/', json={"key": "value"})
-        return items_in_cart.json()#['items_in_cart']
+        return items_in_cart.json()['items_in_cart']
 
     def call_api_get_item_info_cart(self, item_name):
         item_info = requests.get(url+'api/get_item_info_cart/'+item_name, json={"key": "value"})
@@ -57,10 +57,18 @@ class PointOfSale():
         return self.call_api_get_item_info_cart(item_name)
 
     def call_api_delete_from_store(self, item_name):
-        return
+        delete_response = requests.delete(url+'api/delete_from_store/'+item_name, headers=headers)
+        if delete_response.status_code == COMPLETED_NO_CONTENT:
+            return True
+        else:
+            return False
 
     def call_api_delete_from_cart(self, item_name, quantity):
-        return
+        delete_response = requests.delete(url+'api/delete_from_cart/'+item_name, data = json.dumps({"quantity": quantity}), headers=headers)
+        if delete_response.status_code == COMPLETED_NO_CONTENT:
+            return True
+        else:
+            return False
 
     def handle_user_input(self, user_input):
         return
