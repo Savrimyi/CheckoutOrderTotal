@@ -22,6 +22,7 @@ You can run the program with the following command:
     'python[3.7] PointOfSale.py'  
   
 The following commands are used to interact with the API via the PointOfSale system:  
+```
     'help' - Print the help menu.  
     'add item' - Add an item to the store.  
     'delete item' - Delete an item from the store.  
@@ -34,7 +35,7 @@ The following commands are used to interact with the API via the PointOfSale sys
     'item info cart' - Get information about an item in the customer's cart.  
     'get cart' - Get a list of items in the customer's cart.  
     'total' - Get the checkout total.  
-  
+```
 Note: The API must be running for the PointOfSale system to function properly.  
   
 ## Requirements  
