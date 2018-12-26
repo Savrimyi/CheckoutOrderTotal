@@ -17,7 +17,8 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
     checkout = Checkout()
     """ Handles GET requests """
     def do_GET(self):
-        #Parse path and call Checkout functions
+
+        #Get informabout about an item in the store. 
         if '/api/get_item_info/' in self.path:
             item_name = self.path.split('/')[3]
             item_info = self.checkout.get_item_information(item_name)
@@ -31,6 +32,7 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(item_info.json().encode())
                 return item_info.json()
 
+        #Get the list of items in the store.
         elif '/api/get_items_in_store/' in self.path:
             #items_list = self.checkout.get_items_in_store()
             items_list = self.checkout.get_store_as_json()
@@ -41,6 +43,8 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(items_list.encode())
                 return items_list
+
+        #Get the list of items in the cart.
         elif '/api/get_items_in_cart/' in self.path:
             #items_list = self.checkout.get_items_in_cart()
             items_list = self.checkout.get_cart_as_json()
@@ -51,6 +55,8 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(items_list.encode())
                 return items_list
+
+        #Get informatbion about an item in the cart.
         elif '/api/get_item_info_cart/' in self.path:
             item_name = self.path.split('/')[3]
             item_info = self.checkout.get_item_information_from_cart(item_name)
@@ -61,6 +67,8 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(json.dumps({"item": item_info['item'].dict(), "quantity": item_info['quantity']}).encode())
                 return json.dumps({"item": item_info['item'].dict(), "quantity": item_info['quantity']})
+
+        #Get the checkout total.
         elif '/api/get_checkout_total/' in self.path:
             checkout_total = self.checkout.get_checkout_total()
             #Turn into JSON and send back
@@ -90,17 +98,19 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             return "Failed."
 
-        #Use post data and call Checkout functions
+        #Add an item to the store.
         if '/api/add_item_to_store/' in self.path:
             #Get item info from POST
             try:
                 action_result = self.checkout.add_item_to_store(post_dict['name'],post_dict['price_per_unit'],post_dict['unit_type'])
-                #If action completed normally, send CREATED response, else BAD_REQUEST
+                #If action completed normally, send CREATED response, else NOT_FOUND
                 self.send_response(CREATED)
                 self.end_headers()
                 return "Completed."
             except ValueError:
                 pass #(will return 404 not found below)
+
+        #Add a special deal to an item.
         elif '/api/set_special_price/' in self.path:
             #Get item info from POST
             action_result = self.checkout.get_item_information(post_dict['item_name'])
@@ -109,6 +119,8 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
                 self.send_response(OK)
                 self.end_headers()
                 return "Completed."
+
+        #Add a markdown price to an item.
         elif '/api/markdown_price/' in self.path:
             #Get item info from POST
             action_result = self.checkout.get_item_information(post_dict['item_name']).markdown_price(post_dict['markdown_price'])
@@ -116,11 +128,12 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
             self.send_response(OK)
             self.end_headers()
             return "Completed."
+
+        #Scan an item and add it to the cart.
         elif '/api/add_item_to_cart/' in self.path:
-            #Get item info from POST
             try:
                 action_result = self.checkout.add_item_to_cart(post_dict['name'],post_dict['quantity'])
-                #If action completed normally, send CREATED response, else BAD_REQUEST
+                #If action completed normally, send CREATED response, else NOT_FOUND
                 self.send_response(CREATED)
                 self.end_headers()
                 return "Completed."
@@ -137,7 +150,7 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
 
-        #Get data and call functions, handle errors
+        #Delete an item from the store.
         if '/api/delete_from_store/' in self.path:
             item_name = self.path.split('/')[3]
             item_info = self.checkout.get_item_information(item_name)
@@ -147,6 +160,7 @@ class CheckoutAPI(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 return "Completed."
 
+        #Delete an item from the cart.
         elif '/api/delete_from_cart' in self.path:
             item_name = self.path.split('/')[3]
             item_info = self.checkout.get_item_information_from_cart(item_name)

@@ -54,7 +54,7 @@ class Checkout():
         else:
             return matches[0]
 
-    """ Remove an Item or quantity of Items from the cart """
+    """ Remove an Item or quantity of Items from the cart. """
     def remove_item_from_cart(self, name, quantity):
         item_in_cart = self.get_item_information_from_cart(name)
         if item_in_cart is None or quantity < 1:
@@ -66,6 +66,7 @@ class Checkout():
         else:
             raise(ValueError)
 
+    """ Remove an item from the store. """
     def remove_item_from_store(self, name):
         item_in_store = self.get_item_information(name)
         if item_in_store is None: raise(ValueError)
@@ -88,6 +89,8 @@ class Checkout():
                     special = special.replace("of equal or lesser value for","at").replace(","," items,")
 
                 #Determine which special discount to apply.
+
+                #Percentage discount special
                 if re.search(r'^buy \d+ items, get \d+ at %\d+ off', special):
                     pattern = re.compile(r'^buy (?P<purchase_requirement>\d+) items, get (?P<discounted_quantity>\d+) at %(?P<percentage_discount>\d+) off')
                     match = pattern.match(special).groupdict()
@@ -110,6 +113,7 @@ class Checkout():
                     full_price_items = int(item['quantity']) - discounted_items
                     total += (item['item'].get_price() * full_price_items) + (item['item'].get_price() * (1 - percentage_discount) * discounted_items)
 
+                # N for $N special
                 elif re.search(r'^\d+ for \$\d+', special):
                     pattern = re.compile(r'^(?P<quantity>\d+) for \$(?P<price>\d+)')
                     match = pattern.match(special).groupdict()
@@ -153,8 +157,10 @@ class Checkout():
         checkout_dict['items_in_cart'] = [{"item": x['item'].json(), "quantity": x['quantity']} for x in self.cart]
         return json.dumps(checkout_dict)
 
+    """ Get the list of items in the store as JSON. """
     def get_store_as_json(self):
         return json.dumps({"items_in_store": [x.json() for x in self.store]})
 
+    """ Get the list of items in the customer's cart as JSON. """
     def get_cart_as_json(self):
         return json.dumps({"items_in_cart": [{"item": x['item'].json(), "quantity": x['quantity']} for x in self.cart]})
