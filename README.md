@@ -38,7 +38,7 @@ The following commands are used to interact with the API via the PointOfSale sys
 Note: The API must be running for the PointOfSale system to function properly.
 
 ## Requirements
-This project was built using the latest version of Python (3.7.1).
+This project was built using the latest version of Python (3.7.1). In my environment the command to run python 3.7 is 'python3.7' but if no other python is installed, you can simply use 'python'. Other python3 variants should work, but 2 will not.
 If you are on a mac, you can install this version using Brew.
 The only external library required is Requests.
 You can install it with the command: 'pip[3.7] install requests'.
@@ -50,3 +50,14 @@ Command to run the tests: 'python[3.7] RunCheckoutAPI.py' or 'python[3.7] RunChe
 
 Note: The tests will not work properly if the API is not running on localhost:8080 (this may be reconfigured in the TestAPI.py file).
 See instructions above to run the API.
+
+I recommend running the API and tests in separate windows, but you can run the API in the background instead if that is better for your environment.
+
+### List of commands to reproduce my results:
+      1. python3.7 RunCheckoutAPI.py run &
+      2. python3.7 RunCheckoutAPI.py test
+      3. python3.7 PointOfSale.py
+      4. ps aux | grep RunCheckoutAPI.py
+      5. kill -9 <PID of RunCheckoutAPI.py>
+
+You can skip steps 4 and 5, but the API will continue running in the background until it is stopped. If you run the API and tests in separate windows, these steps will be unnecessary.
